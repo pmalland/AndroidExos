@@ -1,0 +1,52 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns = "http://www.springframework.org/schema/beans"
+   xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:context="http://www.springframework.org/schema/context"
+   xmlns:mvc="http://www.springframework.org/schema/mvc"
+   xmlns:p="http://www.springframework.org/schema/p"
+   xsi:schemaLocation = "http://www.springframework.org/schema/context
+   http://www.springframework.org/schema/context/spring-context.xsd
+   http://www.springframework.org/schema/mvc 
+   http://www.springframework.org/schema/mvc/spring-mvc.xsd
+   http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<mvc:annotation-driven/>
+	
+	<!-- Resolving static files
+	 Create a resources tag, say it where to look i.e pdfs what to look
+	i.e /pdfs/** any pdf under this directory and it can recur that's the meaning of **
+	any file and recurse from there. web.xml needs to also point to pdfs/**
+	It then bypass all of our controller nest and set up a file or ressourseViewResolver for 
+	the file in main/webapp/pdfs folder  
+	-->
+	<mvc:resources location="pdfs" mapping="/pdfs/**"></mvc:resources>
+	
+	<!-- establish a scanner and tells him where to start scanning for annotations that
+	declare some controllers -->
+	<context:component-scan base-package="com.paulmalland.controller" />
+
+<!--    <bean id = "helloWorld" class = "com.paulmalland.HelloWorld"> -->
+<!--       <property name = "message" value = "Hello World!"/> -->
+<!--    </bean> -->
+
+<!-- 	Longhand way of bean definition, where you define bean properties, prefix, suffix -->
+<!-- 	<bean class="org.sringframework.web.servlet.view.InternalResourceViewResolver"> -->
+<!-- 		<property name="prefix" value="/WEB-INF/jsp/"/> -->
+<!-- 		<property name="sufix" value=".jsp"/>		 -->
+<!-- 	</bean> -->
+	
+	<!--  Shorthand way need to include p for the property namespace in our xmlns
+			just include xmlns:p="http://www.springframework.org/schema/p" with the bunch of the other xmlns, 
+			 no xsi:schemaLocation needed for it -->
+
+<!-- 	<bean class="org.sringframework.web.servlet.view.InternalResourceViewResolver" -->
+<!-- 	p:prefix="/WEB-INF/jsp/" -->
+<!-- 	p:suffix=".jsp" /> -->
+	
+	<!-- p:prefix="/WEB-INF/jsp" say to search in the /WEB-INF/jsp folder
+	     p:suffix=".jps" say to look for a .jsp file  -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" />
+
+</beans>
