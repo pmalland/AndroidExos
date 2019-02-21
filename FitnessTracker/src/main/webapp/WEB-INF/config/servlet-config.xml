@@ -6,11 +6,11 @@
    xmlns:mvc="http://www.springframework.org/schema/mvc"
    xmlns:p="http://www.springframework.org/schema/p"
    xsi:schemaLocation = "http://www.springframework.org/schema/context
-   http://www.springframework.org/schema/context/spring-context.xsd
+   http://www.springframework.org/schema/context/spring-context-4.3.xsd
    http://www.springframework.org/schema/mvc 
-   http://www.springframework.org/schema/mvc/spring-mvc.xsd
+   http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
    http://www.springframework.org/schema/beans
-   http://www.springframework.org/schema/beans/spring-beans.xsd">
+   http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
 
 	<mvc:annotation-driven/>
 	
@@ -26,7 +26,30 @@
 	<!-- establish a scanner and tells him where to start scanning for annotations that
 	declare some controllers -->
 	<context:component-scan base-package="com.paulmalland.controller" />
+	
+	<!-- register our interceptors
+	that p:paramName="Language" is the same as in the addMinutes.jsp, tied to the parameter.
+	 Here we intercep the Language of the addMinutes.jsp files.
+	 So we register our interceptor and setup a LocaleResolver so it would look and know where to look
+	 for what Locale we currently using
+	 -->
+	<mvc:interceptors>
+		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" p:paramName="language" />
+	</mvc:interceptors>
+	
+	<!-- bean locale Resolver , look for the currently set Locale in our app -->
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" p:defaultLocale="en" />
+	
+	<!--  creating a bean that serve as a resource bundle
+	 for our messages in messages.properties
+	 id="messageSource" doesn't have to be that name, it's just convenient
+	 p:basename="messages" refers to our messages.properties file 
+	  -->
+	<bean id="messageSource" 
+	class="org.springframework.context.support.ResourceBundleMessageSource" 
+	p:basename="messages" ></bean>	
 
+	
 <!--    <bean id = "helloWorld" class = "com.paulmalland.HelloWorld"> -->
 <!--       <property name = "message" value = "Hello World!"/> -->
 <!--    </bean> -->
