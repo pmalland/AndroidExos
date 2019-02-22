@@ -1,75 +1,140 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 
-<beans xmlns = "http://www.springframework.org/schema/beans"
-   xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
-   xmlns:context="http://www.springframework.org/schema/context"
-   xmlns:mvc="http://www.springframework.org/schema/mvc"
-   xmlns:p="http://www.springframework.org/schema/p"
-   xsi:schemaLocation = "http://www.springframework.org/schema/context
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
    http://www.springframework.org/schema/context/spring-context-4.3.xsd
    http://www.springframework.org/schema/mvc 
    http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
    http://www.springframework.org/schema/beans
    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
 
-	<mvc:annotation-driven/>
-	
-	<!-- Resolving static files
-	 Create a resources tag, say it where to look i.e pdfs what to look
-	i.e /pdfs/** any pdf under this directory and it can recur that's the meaning of **
-	any file and recurse from there. web.xml needs to also point to pdfs/**
-	It then bypass all of our controller nest and set up a file or ressourseViewResolver for 
-	the file in main/webapp/pdfs folder  
-	-->
+	<mvc:annotation-driven />
+
+	<!-- Resolving static files Create a resources tag, say it where to look 
+		i.e pdfs what to look i.e /pdfs/** any pdf under this directory and it can 
+		recur that's the meaning of ** any file and recurse from there. web.xml needs 
+		to also point to pdfs/** It then bypass all of our controller nest and set 
+		up a file or ressourseViewResolver for the file in main/webapp/pdfs folder -->
 	<mvc:resources location="pdfs" mapping="/pdfs/**"></mvc:resources>
-	
-	<!-- establish a scanner and tells him where to start scanning for annotations that
-	declare some controllers -->
-	<context:component-scan base-package="com.paulmalland.controller" />
-	
-	<!-- register our interceptors
-	that p:paramName="Language" is the same as in the addMinutes.jsp, tied to the parameter.
-	 Here we intercep the Language of the addMinutes.jsp files.
-	 So we register our interceptor and setup a LocaleResolver so it would look and know where to look
-	 for what Locale we currently using
-	 -->
+
+	<!-- establish a scanner and tells him where to start scanning for annotations 
+		that declare some controllers -->
+	<context:component-scan
+		base-package="com.paulmalland.controller" />
+
+	<!-- That BIG BEAN set us up to be able to handle those views based off 
+		Json request or xml request -->
+	<!-- <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver"> 
+		<property name="order" value="1"></property> The contentNegotiationManager 
+		need to knwo what type we're going to accept in our application <property 
+		name="contentNegotiationManager"> <bean class="org.springframework.web.accept.ContentNegotiationManager"> 
+		<constructor-arg> <bean class="org.springframework.web.accept.PathExtensionContentNegotiationStrategy"> 
+		<constructor-arg> <map> here some http header type: application/json we configure 
+		the xml side too even if we don't use it here <entry key="json" value="application/json" 
+		/> <entry key="xml" value="application/xml"></entry> </map> </constructor-arg> 
+		</bean> </constructor-arg> </bean> </property> the default view, what framework 
+		we wanna use based off the view type that's coming through <property name="defaultViews"> 
+		<list> jackson1 is depreciated so we use Jackson2 .... five ? <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" 
+		/> <bean class="org.springframework.web.servlet.view.xml.MarshallingView"> 
+		<constructor-arg> <bean class="org.springframework.oxm.xstream.XStreamMarshaller"> 
+		<property name="autodetectAnnotations" value="true" /> </bean> </constructor-arg> 
+		</bean> </list> </property> </bean> -->
+	<bean
+		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="order" value="1" />
+		<property name="contentNegotiationManager">
+			<bean
+				class="org.springframework.web.accept.ContentNegotiationManager">
+				<constructor-arg>
+					<bean
+						class="org.springframework.web.accept.PathExtensionContentNegotiationStrategy">
+						<constructor-arg>
+							<map>
+								<entry key="json" value="application/json" />
+								<entry key="xml" value="application/xml" />
+							</map>
+						</constructor-arg>
+					</bean>
+				</constructor-arg>
+			</bean>
+		</property>
+
+		<property name="defaultViews">
+			<list>
+				<bean
+					class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
+				<bean
+					class="org.springframework.web.servlet.view.xml.MarshallingView">
+					<constructor-arg>
+						<bean
+							class="org.springframework.oxm.xstream.XStreamMarshaller">
+							<property name="autodetectAnnotations" value="true" />
+						</bean>
+					</constructor-arg>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- register our interceptors that p:paramName="Language" is the same as 
+		in the addMinutes.jsp, tied to the parameter. Here we intercep the Language 
+		of the addMinutes.jsp files. So we register our interceptor and setup a LocaleResolver 
+		so it would look and know where to look for what Locale we currently using -->
 	<mvc:interceptors>
-		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" p:paramName="language" />
+		<bean
+			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"
+			p:paramName="language" />
 	</mvc:interceptors>
-	
+
 	<!-- bean locale Resolver , look for the currently set Locale in our app -->
-	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" p:defaultLocale="en" />
-	
-	<!--  creating a bean that serve as a resource bundle
-	 for our messages in messages.properties
-	 id="messageSource" doesn't have to be that name, it's just convenient
-	 p:basename="messages" refers to our messages.properties file 
-	  -->
-	<bean id="messageSource" 
-	class="org.springframework.context.support.ResourceBundleMessageSource" 
-	p:basename="messages" ></bean>	
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver"
+		p:defaultLocale="en" />
 
-	
-<!--    <bean id = "helloWorld" class = "com.paulmalland.HelloWorld"> -->
-<!--       <property name = "message" value = "Hello World!"/> -->
-<!--    </bean> -->
+	<!-- creating a bean that serve as a resource bundle for our messages in 
+		messages.properties id="messageSource" doesn't have to be that name, it's 
+		just convenient p:basename="messages" refers to our messages.properties file -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource"
+		p:basename="messages"></bean>
 
-<!-- 	Longhand way of bean definition, where you define bean properties, prefix, suffix -->
-<!-- 	<bean class="org.sringframework.web.servlet.view.InternalResourceViewResolver"> -->
-<!-- 		<property name="prefix" value="/WEB-INF/jsp/"/> -->
-<!-- 		<property name="sufix" value=".jsp"/>		 -->
-<!-- 	</bean> -->
-	
-	<!--  Shorthand way need to include p for the property namespace in our xmlns
-			just include xmlns:p="http://www.springframework.org/schema/p" with the bunch of the other xmlns, 
-			 no xsi:schemaLocation needed for it -->
 
-<!-- 	<bean class="org.sringframework.web.servlet.view.InternalResourceViewResolver" -->
-<!-- 	p:prefix="/WEB-INF/jsp/" -->
-<!-- 	p:suffix=".jsp" /> -->
-	
-	<!-- p:prefix="/WEB-INF/jsp" say to search in the /WEB-INF/jsp folder
-	     p:suffix=".jps" say to look for a .jsp file  -->
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" />
+	<!-- <bean id = "helloWorld" class = "com.paulmalland.HelloWorld"> -->
+	<!-- <property name = "message" value = "Hello World!"/> -->
+	<!-- </bean> -->
+
+	<!-- Longhand way of bean definition, where you define bean properties, 
+		prefix, suffix -->
+	<!-- <bean class="org.sringframework.web.servlet.view.InternalResourceViewResolver"> -->
+	<!-- <property name="prefix" value="/WEB-INF/jsp/"/> -->
+	<!-- <property name="sufix" value=".jsp"/> -->
+	<!-- </bean> -->
+
+	<!-- Shorthand way of bean definition need to include p for the property 
+		namespace in our xmlns just include xmlns:p="http://www.springframework.org/schema/p" 
+		with the bunch of the other xmlns, no xsi:schemaLocation needed for it -->
+
+	<!-- <bean class="org.sringframework.web.servlet.view.InternalResourceViewResolver" -->
+	<!-- p:prefix="/WEB-INF/jsp/" -->
+	<!-- p:suffix=".jsp" /> -->
+
+	<!-- p:prefix="/WEB-INF/jsp" say to search in the /WEB-INF/jsp folder p:suffix=".jps" 
+		say to look for a .jsp file -->
+
+	<!-- For some reasons, the resource ViewResolver has to be the last visited 
+		when resolving so we bump it back to 2 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" p:order="2" />
+
+	<!-- the Bean Name Resolver is the first to be visited -->
+	<bean
+		class="org.springframework.web.servlet.view.BeanNameViewResolver"
+		p:order="0" />
 
 </beans>
