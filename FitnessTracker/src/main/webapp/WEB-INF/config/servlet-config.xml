@@ -22,9 +22,14 @@
 	<mvc:resources location="pdfs" mapping="/pdfs/**"></mvc:resources>
 
 	<!-- establish a scanner and tells him where to start scanning for annotations 
-		that declare some controllers -->
+		that declare some controllers
+		we began with com.paulmalland.controller   but now that we use service autowiring too
+		we broaden our scale and look for annotation is our whole packages com.paulmalland.
+		We might wanna break this into multiple configuration files,  one component for the controller, one for the services
+		and repo in another one ; here we put all in one for example
+		 -->
 	<context:component-scan
-		base-package="com.paulmalland.controller" />
+		base-package="com.paulmalland" />
 
 	<!-- That BIG BEAN set us up to be able to handle those views based off 
 		Json request or xml request -->
@@ -43,16 +48,22 @@
 		<constructor-arg> <bean class="org.springframework.oxm.xstream.XStreamMarshaller"> 
 		<property name="autodetectAnnotations" value="true" /> </bean> </constructor-arg> 
 		</bean> </list> </property> </bean> -->
+		<!-- That BIG BEAN set us up to be able to handle those views based off 
+		Json request or xml request -->
 	<bean
 		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
 		<property name="order" value="1" />
 		<property name="contentNegotiationManager">
+		<!--   The contentNegotiationManager 
+		need to know what type we're going to accept in our application  -->
 			<bean
 				class="org.springframework.web.accept.ContentNegotiationManager">
 				<constructor-arg>
 					<bean
 						class="org.springframework.web.accept.PathExtensionContentNegotiationStrategy">
 						<constructor-arg>
+						<!--  here some http header type: application/json we configure 
+		the xml side too even if we don't use it here -->
 							<map>
 								<entry key="json" value="application/json" />
 								<entry key="xml" value="application/xml" />
@@ -63,10 +74,14 @@
 			</bean>
 		</property>
 
+ <!-- the default view, what framework 
+		we wanna use based off the view type that's coming through -->
 		<property name="defaultViews">
 			<list>
+			<!-- jackson1 is depreciated so we use Jackson2 .... five ? -->
 				<bean
 					class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
+				<!-- Marshalling is converting xml to object -->
 				<bean
 					class="org.springframework.web.servlet.view.xml.MarshallingView">
 					<constructor-arg>

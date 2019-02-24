@@ -3,6 +3,7 @@ package com.paulmalland.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,10 +12,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.paulmalland.model.Activity;
 import com.paulmalland.model.Exercise;
+import com.paulmalland.service.ExerciseService;
 
 @Controller
 public class MinutesController {
 
+	@Autowired
+	private ExerciseService exerciseService;
+	
 	/**
 	 * @RequestMapping(value="/addMinutes") /addMinutes refer to the url that we
 	 *                                      looking for i.e
@@ -26,7 +31,11 @@ public class MinutesController {
 	public String addMinutes(@ModelAttribute("exercise") Exercise exercise) {
 
 		System.out.println("exercise: " + exercise.getMinutes());
+		System.out.println("exercise activity: " + exercise.getActivity());
 
+		// typically we would call her our datbase and do something with it and then navigate to another page
+		
+		
 		/**
 		 * This "addMinutes" that we return is used by our InternatRessourceViewResolver
 		 * or ViewResolver in the servlet-config.xml file to search for the right .jsp
@@ -85,19 +94,22 @@ public class MinutesController {
 	@RequestMapping(value = "/activities", method = RequestMethod.GET)
 	public @ResponseBody List<Activity> findAllActivities(){
 		List<Activity> activities = new ArrayList<Activity>();
+/*
+ * Moving this to our service class, where the business logic should be 
+ * 		List<Activity> activities = new ArrayList<Activity>();
 		Activity run = new Activity();
 		run.setDesc("Run");
 		activities.add(run);
 		
 		Activity bike = new Activity();
-		run.setDesc("Bike");
+		bike.setDesc("Bike");
 		activities.add(bike);
 		
 		Activity swim = new Activity();
-		run.setDesc("Swim");
+		swim.setDesc("Swim");
 		activities.add(swim);
-		
-		return activities;
+*/		
+		return exerciseService.findAllActivities();
 	}
 
 }
